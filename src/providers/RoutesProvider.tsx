@@ -7,12 +7,16 @@ import { ViewName } from '@/constants/routes';
 import { useAppSelector } from '@/hooks/useAppSelector';
 import { ExploreScreen } from '@/screens/ExploreScreen';
 import { HomeScreen } from '@/screens/HomeScreen';
+import { LocationScreen } from '@/screens/LocationScreen';
+import { LoginScreen } from '@/screens/LoginScreen';
 import { ModalScreen } from '@/screens/ModalScreen';
 import { SignupScreen } from '@/screens/SignupScreen';
 import { navigationRef } from '@/services/NavigationService';
 
 export type AuthStackParamList = {
+  [ViewName.Login]: undefined;
   [ViewName.Signup]: undefined;
+  [ViewName.Location]: undefined;
 };
 
 export type AppStackParamList = {
@@ -30,9 +34,11 @@ function AuthNavigator() {
       screenOptions={{
         headerShown: false,
       }}
-      initialRouteName={ViewName.Signup}
+      initialRouteName={ViewName.Login}
     >
+      <AuthStack.Screen name={ViewName.Login} component={LoginScreen} />
       <AuthStack.Screen name={ViewName.Signup} component={SignupScreen} />
+      <AuthStack.Screen name={ViewName.Location} component={LocationScreen} />
     </AuthStack.Navigator>
   );
 }

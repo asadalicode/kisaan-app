@@ -3,7 +3,9 @@ import { NavigationContainerRef } from '@react-navigation/native';
 import { ViewName } from '@/constants/routes';
 
 export type RootStackParamList = {
+  [ViewName.Login]: undefined;
   [ViewName.Signup]: undefined;
+  [ViewName.Location]: undefined;
   [ViewName.Home]: undefined;
   [ViewName.Explore]: undefined;
   [ViewName.Modal]: undefined;

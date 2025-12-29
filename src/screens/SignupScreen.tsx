@@ -1,6 +1,7 @@
 import PhoneInput from '@perttu/react-native-phone-number-input';
+import { useNavigation } from '@react-navigation/native';
 import React, { useRef } from 'react';
-import { View } from 'react-native';
+import { TouchableOpacity, View } from 'react-native';
 import { Button, Incubator, View as UIView } from 'react-native-ui-lib';
 
 import { BaseScreen } from '@/components/layout/BaseScreen';
@@ -8,22 +9,24 @@ import { AppText } from '@/components/ui/AppText';
 import { Chip } from '@/components/ui/Chip';
 import { ViewName } from '@/constants/routes';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
-import { navigateRoot } from '@/services/NavigationService';
-import { setAccessToken, setPhone } from '@/slices/sessionSlice';
+import type { AuthStackParamList } from '@/providers/RoutesProvider';
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
+
+type SignupScreenNavigationProp = NativeStackNavigationProp<AuthStackParamList>;
 
 export function SignupScreen() {
   const { TextField } = Incubator;
+  const navigation = useNavigation<SignupScreenNavigationProp>();
   const dispatch = useAppDispatch();
   const [name, setName] = React.useState('');
   const [phone, setPhoneInput] = React.useState('');
+  const [landArea, setLandArea] = React.useState('');
   const [crop, setCrop] = React.useState('گندم');
   const phoneInputRef = useRef<PhoneInput | null>(null);
 
   const handleSignup = () => {
-    // For now, just simulate a successful signup/login
-    dispatch(setPhone(phone || 'demo-user'));
-    dispatch(setAccessToken('demo-token'));
-    navigateRoot(ViewName.Home);
+    // Navigate to location onboarding screen
+    navigation.navigate(ViewName.Location);
   };
 
   return (
@@ -107,6 +110,45 @@ export function SignupScreen() {
             )} */}
           </View>
 
+          {/* Land area */}
+          <View className="mb-5 items-end">
+            <AppText className="text-white mb-2 text-right">زمین کا رقبہ</AppText>
+            <View className="flex-row items-center w-full" style={{ gap: 8 }}>
+              <View className="flex-1">
+                <TextField
+                  value={landArea}
+                  onChangeText={setLandArea}
+                  placeholder="0"
+                  placeholderTextColor="#bbf7d0"
+                  textAlign="right"
+                  keyboardType="numeric"
+                  color="white"
+                  containerStyle={{
+                    borderRadius: 16,
+                    backgroundColor: '#047857',
+                    paddingHorizontal: 12,
+                    paddingVertical: 0,
+                    height: 44,
+                    width: '100%',
+                    justifyContent: 'center',
+                  }}
+                />
+              </View>
+              <View
+                style={{
+                  borderRadius: 16,
+                  backgroundColor: '#047857',
+                  height: 44,
+                  paddingHorizontal: 16,
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                }}
+              >
+                <AppText className="text-white text-base">ایکڑ</AppText>
+              </View>
+            </View>
+          </View>
+
           {/* Crop selection */}
           <View className="items-end mb-4">
             <AppText className="text-white mb-3 text-right">فصل کا نام</AppText>
@@ -143,6 +185,34 @@ export function SignupScreen() {
               fontSize: 16,
             }}
           />
+
+          {/* Login link */}
+          <TouchableOpacity
+            onPress={() => navigation.navigate(ViewName.Login)}
+            activeOpacity={0.7}
+            style={{ marginTop: 16 }}
+          >
+            <AppText
+              className="text-white text-center text-base"
+              style={{
+                textShadowColor: 'rgba(0, 0, 0, 0.75)',
+                textShadowOffset: { width: 0, height: 1 },
+                textShadowRadius: 3,
+              }}
+            >
+              پہلے سے اکاؤنٹ ہے؟{' '}
+              <AppText
+                className="text-white font-bold underline"
+                style={{
+                  textShadowColor: 'rgba(0, 0, 0, 0.75)',
+                  textShadowOffset: { width: 0, height: 1 },
+                  textShadowRadius: 3,
+                }}
+              >
+                لاگ ان کریں
+              </AppText>
+            </AppText>
+          </TouchableOpacity>
         </UIView>
     </BaseScreen>
   );
