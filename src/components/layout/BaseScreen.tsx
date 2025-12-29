@@ -1,52 +1,29 @@
-import React, { ReactNode } from 'react';
-import {
-    ImageBackground,
-    ImageSourcePropType,
-    KeyboardAvoidingView,
-    Platform,
-    StyleProp,
-    ViewStyle,
-} from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import React from 'react';
+import { ImageBackground, ImageSourcePropType, KeyboardAvoidingView, Platform } from 'react-native';
+import { View, ViewProps } from 'react-native-ui-lib';
 
-type BaseScreenProps = {
-  children: ReactNode;
+interface Props extends ViewProps {
   backgroundImage?: ImageSourcePropType;
-  useSafeArea?: boolean;
-  contentStyle?: StyleProp<ViewStyle>;
-};
+  children: React.ReactNode;
+}
 
-export function BaseScreen({
-  children,
-  backgroundImage,
-  useSafeArea = true,
-  contentStyle,
-}: BaseScreenProps) {
-  const safeArea = (
-    <SafeAreaView
-      style={[{ flex: 1 }, contentStyle]}
-      edges={useSafeArea ? ['top', 'right', 'bottom', 'left'] : []}
+export function BaseScreen({ useSafeArea = true, backgroundImage, ...props }: Props) {
+  return backgroundImage ? (
+    <ImageBackground
+      source={backgroundImage}
+      style={{
+        flex: 1,
+      }}
     >
-      {children}
-    </SafeAreaView>
-  );
-
-  const content = backgroundImage ? (
-    <ImageBackground source={backgroundImage} style={{ flex: 1 }}>
-      {safeArea}
+      <View flex useSafeArea>
+        <View flex {...props} />
+      </View>
     </ImageBackground>
   ) : (
-    safeArea
-  );
-
-  return (
-    <KeyboardAvoidingView
-      style={{ flex: 1 }}
-      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-    >
-      {content}
+    <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={{ flex: 1 }}>
+      <View bg-screen flex useSafeArea={useSafeArea}>
+        <View flex {...props} />
+      </View>
     </KeyboardAvoidingView>
   );
 }
-
-

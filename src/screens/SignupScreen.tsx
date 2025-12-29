@@ -1,8 +1,7 @@
 import PhoneInput from '@perttu/react-native-phone-number-input';
 import React, { useRef } from 'react';
 import { View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { Button, Incubator } from 'react-native-ui-lib';
+import { Button, Incubator, View as UIView } from 'react-native-ui-lib';
 
 import { BaseScreen } from '@/components/layout/BaseScreen';
 import { AppText } from '@/components/ui/AppText';
@@ -30,13 +29,11 @@ export function SignupScreen() {
   return (
     <BaseScreen
       backgroundImage={require('../../assets/bg/bg-1.jpg')}
-      useSafeArea={false}
     >
-      <SafeAreaView edges={['top', 'bottom']} style={{ flex: 1 }}>
-        <View className="flex-1 px-6 py-6 justify-between ">
+      <UIView flex padding-30 centerV>
           {/* Heading */}
-          <View className="items-end mt-4 mb-6">
-            <AppText className="text-3xl font-bold text-surface-light mb-2 text-right leading-10 pt-4 pr-1">
+          <View className="items-end gap-2 mb-10">
+            <AppText className="text-3xl font-bold text-surface-light">
               کسان ایپ میں خوش آمدید
             </AppText>
             <AppText className="text-surface-light/80 text-right">
@@ -45,7 +42,7 @@ export function SignupScreen() {
           </View>
 
           {/* Form card */}
-          <View className="rounded-3xl bg-surface px-5 py-6 shadow-lg shadow-black/30 border border-white/10">
+          <View className="rounded-3xl bg-surface px-5 py-6 shadow-lg shadow-black/30 border border-white/10 mb-5">
           {/* Name */}
           <View className="mb-5 items-end">
             <AppText className="text-white mb-2 text-right">نام</AppText>
@@ -146,8 +143,7 @@ export function SignupScreen() {
               fontSize: 16,
             }}
           />
-        </View>
-      </SafeAreaView>
+        </UIView>
     </BaseScreen>
   );
 }
