@@ -1,31 +1,28 @@
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { ResizeMode, Video } from 'expo-av';
-import * as Location from 'expo-location';
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Modal, TouchableOpacity, View } from 'react-native';
-import Animated, {
-  Easing,
-  useAnimatedStyle,
-  useSharedValue,
-  withRepeat,
-  withTiming,
-} from 'react-native-reanimated';
-import { Button, View as UIView } from 'react-native-ui-lib';
+import { Button, Incubator, View as UIView } from 'react-native-ui-lib';
 
 import { BaseScreen } from '@/components/layout/BaseScreen';
+import { ThemedText } from '@/components/themed-text';
 import { AppText } from '@/components/ui/AppText';
 import { CustomAlert } from '@/components/ui/CustomAlert';
 import { ViewName } from '@/constants/routes';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
-import type { AuthStackParamList } from '@/providers/RoutesProvider';
+import type { AppStackParamList } from '@/providers/RoutesProvider';
+import { navigate } from '@/services/NavigationService';
+import { clearSession } from '@/slices/sessionSlice';
 
-type LocationScreenNavigationProp = NativeStackNavigationProp<AuthStackParamList>;
+type PaymentScreenNavigationProp = NativeStackNavigationProp<AppStackParamList>;
 
-export function LocationScreen() {
-  const navigation = useNavigation<LocationScreenNavigationProp>();
-  const dispatch = useAppDispatch();
+export function PaymentScreen() {
+  const navigation = useNavigation<PaymentScreenNavigationProp>();
+  const { TextField } = Incubator;
+  const [paymentAmount, setPaymentAmount] = useState('');
   const [showVideoModal, setShowVideoModal] = useState(false);
+  const dispatch = useAppDispatch();
   const [alert, setAlert] = useState<{
     visible: boolean;
     title: string;
@@ -37,37 +34,18 @@ export function LocationScreen() {
     message: '',
   });
   const videoRef = useRef<Video>(null);
-  const scale = useSharedValue(1);
 
-  // Animated play button
-  React.useEffect(() => {
-    scale.value = withRepeat(
-      withTiming(1.1, {
-        duration: 1000,
-        easing: Easing.inOut(Easing.ease),
-      }),
-      -1,
-      true
-    );
+  // Auto-play video when screen loads
+  useEffect(() => {
+    setShowVideoModal(true);
   }, []);
 
-  const animatedStyle = useAnimatedStyle(() => {
-    return {
-      transform: [{ scale: scale.value }],
-    };
-  });
-
   // Autoplay video every time modal is opened
-  React.useEffect(() => {
+  useEffect(() => {
     if (showVideoModal && videoRef.current) {
-      // Restart from beginning and play
       videoRef.current.replayAsync();
     }
   }, [showVideoModal]);
-
-  const handlePlayVideo = () => {
-    setShowVideoModal(true);
-  };
 
   const handleCloseVideo = () => {
     setShowVideoModal(false);
@@ -76,40 +54,25 @@ export function LocationScreen() {
     }
   };
 
-  const handleConfirmLocation = async () => {
-    try {
-      // Check if location permission is granted
-      let { status } = await Location.requestForegroundPermissionsAsync();
-      
-      if (status !== 'granted') {
-        setAlert({
-          visible: true,
-          title: 'اجازت درکار',
-          message: 'مقام کی تصدیق کے لیے لوکیشن کی اجازت درکار ہے۔ براہِ کرم اپنی سیٹنگز میں جا کر اجازت دیں۔',
-        });
-        return;
-      }
-
-      // Get current location
-      let location = await Location.getCurrentPositionAsync({});
-      
-      // Show success alert with tick
-      setAlert({
-        visible: true,
-        title: '✓',
-        message: 'مقام کی تصدیق ہو گئی',
-        onPress: () => {
-          // Navigate to video info screen after location confirmation
-          navigation.navigate(ViewName.VideoInfo);
-        },
-      });
-    } catch (error) {
+  const handlePayment = () => {
+    if (!paymentAmount) {
       setAlert({
         visible: true,
         title: 'خرابی',
-        message: 'مقام حاصل کرنے میں مسئلہ آیا۔ براہِ کرم دوبارہ کوشش کریں۔',
+        message: 'براہِ کرم رقم درج کریں',
       });
+      return;
     }
+
+    setAlert({
+      visible: true,
+      title: 'کامیابی',
+      message: 'ادائیگی کامیابی سے ہو گئی',
+      onPress: () => {
+        // Navigate back to video page
+        navigate(ViewName.VideoInfo);
+      },
+    });
   };
 
   return (
@@ -118,67 +81,59 @@ export function LocationScreen() {
         {/* Heading */}
         <View className="items-end gap-2 mb-8">
           <AppText className="text-3xl font-bold text-surface-light text-right">
-            ہدایات
+            ادائیگی
           </AppText>
         </View>
+
+        <ThemedText
+          type="defaultSemiBold"
+          onPress={() => dispatch(clearSession())}
+          style={{ marginLeft: 'auto', textDecorationLine: 'underline' }}
+        >
+          Logout (temporary button for testing)
+        </ThemedText>
 
         {/* Instructions */}
         <View className="mb-8 items-end">
           <AppText className="text-surface-light/90 text-right text-base mb-4 leading-6">
-            اپنے کھیت میں جا کر نیچے لال بٹن دبائیں
+            یہ رقم وڈیوز کے لیے استعمال ہوگی
           </AppText>
         </View>
 
-        {/* Video Instructions Section */}
-        <View className="mb-8 items-center">
-          <AppText className="text-white mb-4 text-right text-lg font-semibold">
-            وڈیو ہدایات
-          </AppText>
-          
-          {/* Animated Play Button */}
-          <TouchableOpacity
-            onPress={handlePlayVideo}
-            activeOpacity={0.8}
-            style={{
-              width: 80,
-              height: 80,
-              borderRadius: 40,
-              backgroundColor: '#dc2626',
-              justifyContent: 'center',
-              alignItems: 'center',
-              shadowColor: '#000',
-              shadowOffset: { width: 0, height: 4 },
-              shadowOpacity: 0.3,
-              shadowRadius: 8,
-              elevation: 8,
-            }}
-          >
-            <Animated.View style={animatedStyle}>
-              <View
-                style={{
-                  width: 0,
-                  height: 0,
-                  borderLeftWidth: 20,
-                  borderRightWidth: 0,
-                  borderTopWidth: 12,
-                  borderBottomWidth: 12,
-                  borderLeftColor: 'white',
-                  borderTopColor: 'transparent',
-                  borderBottomColor: 'transparent',
-                  marginLeft: 4,
-                }}
-              />
-            </Animated.View>
-          </TouchableOpacity>
+        {/* Payment Form Card */}
+        <View className="rounded-3xl bg-surface px-5 py-6 shadow-lg shadow-black/30 border border-white/10 mb-5">
+          {/* Amount Input */}
+          <View className="mb-5 items-end">
+            <AppText className="text-white mb-2 text-right">رقم</AppText>
+            <TextField
+              value={paymentAmount}
+              onChangeText={setPaymentAmount}
+              placeholder="رقم درج کریں"
+              placeholderTextColor="#bbf7d0"
+              textAlign="right"
+              keyboardType="numeric"
+              color="white"
+              containerStyle={{
+                borderRadius: 16,
+                backgroundColor: '#047857',
+                paddingHorizontal: 12,
+                paddingVertical: 0,
+                height: 44,
+                width: '100%',
+                justifyContent: 'center',
+              }}
+            />
+          </View>
         </View>
 
-        {/* Confirm Location Button */}
+        {/* Submit Button */}
         <Button
-          label="مقام کی تصدیق"
-          onPress={handleConfirmLocation}
+          label="پیسے بھیجیں"
+          onPress={handlePayment}
+          disabled={!paymentAmount}
           style={{
             borderRadius: 16,
-            backgroundColor: '#8c43b4',
+            backgroundColor: paymentAmount ? '#8c43b4' : '#6b7280',
             paddingVertical: 12,
           }}
           labelStyle={{
@@ -187,7 +142,7 @@ export function LocationScreen() {
           }}
         />
 
-        {/* Video Modal */}
+        {/* Video Modal - Auto-opens on screen load */}
         <Modal
           visible={showVideoModal}
           animationType="fade"

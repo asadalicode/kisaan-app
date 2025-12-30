@@ -6,6 +6,8 @@ export type RootStackParamList = {
   [ViewName.Login]: undefined;
   [ViewName.Signup]: undefined;
   [ViewName.Location]: undefined;
+  [ViewName.VideoInfo]: undefined;
+  [ViewName.Payment]: undefined;
   [ViewName.Home]: undefined;
   [ViewName.Explore]: undefined;
   [ViewName.Modal]: undefined;
