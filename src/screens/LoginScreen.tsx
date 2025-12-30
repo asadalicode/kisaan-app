@@ -3,7 +3,7 @@ import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import React, { useRef, useState } from 'react';
 import { TouchableOpacity, View } from 'react-native';
-import OtpInputs from 'react-native-otp-inputs';
+import { OtpInput } from 'react-native-otp-entry';
 import { Button, View as UIView } from 'react-native-ui-lib';
 
 import { BaseScreen } from '@/components/layout/BaseScreen';
@@ -23,6 +23,7 @@ export function LoginScreen() {
   const [otp, setOtp] = useState('');
   const [showOtpField, setShowOtpField] = useState(false);
   const phoneInputRef = useRef<PhoneInput | null>(null);
+  const otpInputRef = useRef<any>(null);
 
   const handleSendOtp = () => {
     if (phone) {
@@ -46,6 +47,10 @@ export function LoginScreen() {
       dispatch(setAccessToken('demo-token'));
       navigateRoot(ViewName.Home);
     }
+  };
+
+  const handleOtpFilled = (text: string) => {
+    setOtp(text);
   };
 
   return (
@@ -101,36 +106,58 @@ export function LoginScreen() {
           {/* OTP field - shows after Send OTP is clicked */}
           {showOtpField && (
             <View className="mb-5 items-end">
-              <AppText className="text-white mb-8 text-right">او ٹی پی</AppText>
+              <AppText className="text-white mb-2 text-right">او ٹی پی</AppText>
               <View
                 style={{
                   width: '100%',
                   alignItems: 'flex-end',
                 }}
               >
-                <OtpInputs
-                  handleChange={setOtp}
-                  numberOfInputs={6}
-                  autofillFromClipboard={false}
-                  inputContainerStyles={{
-                    marginHorizontal: 4,
-                  }}
-                  inputStyles={{
-                    backgroundColor: '#047857',
-                    borderRadius: 12,
-                    color: 'white',
-                    fontSize: 16,
-                    fontWeight: '700',
-                    width: 45,
-                    height: 45,
-                    borderWidth: 0,
-                    textAlign: 'center',
-                  }}
-                  focusStyles={{
-                    borderWidth: 2,
-                    borderColor: '#8c43b4',
-                    borderRadius: 12,
-                    backgroundColor: '#065f46',
+                <OtpInput
+                  ref={otpInputRef}
+                  numberOfDigits={6}
+                  onTextChange={setOtp}
+                  onFilled={handleOtpFilled}
+                  type="numeric"
+                  autoFocus={true}
+                  focusColor="#8c43b4"
+                  blurOnFilled={false}
+                  hideStick={false}
+                  theme={{
+                    containerStyle: {
+                      width: 'auto',
+                      flexDirection: 'row',
+                      justifyContent: 'flex-end',
+                      gap: 8,
+                    },
+                    pinCodeContainerStyle: {
+                      flex: 1,
+                      maxWidth: 52,
+                      height: 52,
+                      backgroundColor: '#047857',
+                      borderRadius: 12,
+                      borderWidth: 0,
+                      minWidth: 45,
+                    },
+                    pinCodeTextStyle: {
+                      color: 'white',
+                      fontSize: 20,
+                      fontWeight: '700',
+                      textAlign: 'center',
+                    },
+                    focusStickStyle: {
+                      backgroundColor: '#8c43b4',
+                      width: 2,
+                    },
+                    focusedPinCodeContainerStyle: {
+                      backgroundColor: '#065f46',
+                      borderWidth: 2,
+                      borderColor: '#8c43b4',
+                      borderRadius: 12,
+                    },
+                    filledPinCodeContainerStyle: {
+                      backgroundColor: '#047857',
+                    },
                   }}
                 />
               </View>
