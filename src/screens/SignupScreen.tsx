@@ -1,7 +1,10 @@
+import { MaterialIcons } from '@expo/vector-icons';
 import PhoneInput from '@perttu/react-native-phone-number-input';
 import { useNavigation } from '@react-navigation/native';
-import React, { useRef } from 'react';
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import React, { useRef, useState } from 'react';
 import { TouchableOpacity, View } from 'react-native';
+import { OtpInput } from 'react-native-otp-entry';
 import { Button, Incubator, View as UIView } from 'react-native-ui-lib';
 
 import { BaseScreen } from '@/components/layout/BaseScreen';
@@ -10,7 +13,6 @@ import { Chip } from '@/components/ui/Chip';
 import { ViewName } from '@/constants/routes';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
 import type { AuthStackParamList } from '@/providers/RoutesProvider';
-import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
 type SignupScreenNavigationProp = NativeStackNavigationProp<AuthStackParamList>;
 
@@ -18,15 +20,51 @@ export function SignupScreen() {
   const { TextField } = Incubator;
   const navigation = useNavigation<SignupScreenNavigationProp>();
   const dispatch = useAppDispatch();
-  const [name, setName] = React.useState('');
-  const [phone, setPhoneInput] = React.useState('');
-  const [landArea, setLandArea] = React.useState('');
-  const [crop, setCrop] = React.useState('گندم');
+  const [name, setName] = useState('');
+  const [phone, setPhoneInput] = useState('');
+  const [landArea, setLandArea] = useState('');
+  const [crop, setCrop] = useState('گندم');
+  const [showOtpView, setShowOtpView] = useState(false);
+  const [otp, setOtp] = useState('');
   const phoneInputRef = useRef<PhoneInput | null>(null);
+  const otpInputRef = useRef<any>(null);
 
   const handleSignup = () => {
-    // Navigate to location onboarding screen
-    navigation.navigate(ViewName.Location);
+    // Validate required fields
+    if (!name || !phone || !landArea) {
+      // You can add validation alert here
+      return;
+    }
+    // Show OTP view
+    setShowOtpView(true);
+    // In real app, this would call an API to send OTP
+    console.log('OTP sent to:', phone);
+  };
+
+  const handleOtpFilled = (text: string) => {
+    setOtp(text);
+  };
+
+  const handleVerifyOtp = () => {
+    if (otp.length === 6) {
+      // In real app, this would verify OTP with backend
+      console.log('Verifying OTP:', {
+        name,
+        phone,
+        landArea,
+        crop,
+        otp,
+        timestamp: new Date().toISOString(),
+      });
+
+      // Navigate to location onboarding screen after OTP verification
+      navigation.navigate(ViewName.Location);
+    }
+  };
+
+  const handleBackToForm = () => {
+    setShowOtpView(false);
+    setOtp('');
   };
 
   return (
@@ -34,15 +72,17 @@ export function SignupScreen() {
       backgroundImage={require('../../assets/bg/bg-1.jpg')}
     >
       <UIView flex padding-30 centerV>
-          {/* Heading */}
-          <View className="items-end gap-2 mb-10">
-            <AppText className="text-3xl font-bold text-surface-light">
-              کسان ایپ میں خوش آمدید
-            </AppText>
-            <AppText className="text-surface-light/80 text-right">
-              براہِ کرم اپنی معلومات درج کریں
-            </AppText>
-          </View>
+        {!showOtpView ? (
+          <>
+            {/* Heading */}
+            <View className="items-end gap-2 mb-10">
+              <AppText className="text-3xl font-bold text-surface-light">
+                کسان ایپ میں خوش آمدید
+              </AppText>
+              <AppText className="text-surface-light/80 text-right">
+                براہِ کرم اپنی معلومات درج کریں
+              </AppText>
+            </View>
 
           {/* Form card */}
           <View className="rounded-3xl bg-surface px-5 py-6 shadow-lg shadow-black/30 border border-white/10 mb-5">
@@ -186,34 +226,173 @@ export function SignupScreen() {
             }}
           />
 
-          {/* Login link */}
-          <TouchableOpacity
-            onPress={() => navigation.navigate(ViewName.Login)}
-            activeOpacity={0.7}
-            style={{ marginTop: 16 }}
-          >
-            <AppText
-              className="text-white text-center text-base"
-              style={{
-                textShadowColor: 'rgba(0, 0, 0, 0.75)',
-                textShadowOffset: { width: 0, height: 1 },
-                textShadowRadius: 3,
-              }}
+            {/* Login link */}
+            <TouchableOpacity
+              onPress={() => navigation.navigate(ViewName.Login)}
+              activeOpacity={0.7}
+              style={{ marginTop: 16 }}
             >
-              پہلے سے اکاؤنٹ ہے؟{' '}
               <AppText
-                className="text-white font-bold underline"
+                className="text-white text-center text-base"
                 style={{
                   textShadowColor: 'rgba(0, 0, 0, 0.75)',
                   textShadowOffset: { width: 0, height: 1 },
                   textShadowRadius: 3,
                 }}
               >
-                لاگ ان کریں
+                پہلے سے اکاؤنٹ ہے؟{' '}
+                <AppText
+                  className="text-white font-bold underline"
+                  style={{
+                    textShadowColor: 'rgba(0, 0, 0, 0.75)',
+                    textShadowOffset: { width: 0, height: 1 },
+                    textShadowRadius: 3,
+                  }}
+                >
+                  لاگ ان کریں
+                </AppText>
               </AppText>
-            </AppText>
-          </TouchableOpacity>
-        </UIView>
+            </TouchableOpacity>
+          </>
+        ) : (
+          <>
+            {/* OTP View */}
+            {/* Back Button - Top Left */}
+            <TouchableOpacity
+              onPress={handleBackToForm}
+              activeOpacity={0.7}
+              style={{
+                alignSelf: 'flex-start',
+                marginBottom: 24,
+                flexDirection: 'row',
+                alignItems: 'center',
+                gap: 8,
+                paddingVertical: 8,
+                paddingHorizontal: 12,
+                borderRadius: 12,
+                backgroundColor: 'rgba(255, 255, 255, 0.15)',
+              }}
+            >
+              <MaterialIcons name="arrow-back" size={20} color="white" />
+              <AppText className="text-white text-base font-semibold">
+                واپس
+              </AppText>
+            </TouchableOpacity>
+
+            {/* Heading */}
+            <View className="items-end gap-2 mb-10">
+              <AppText className="text-3xl font-bold text-surface-light text-right">
+                او ٹی پی تصدیق
+              </AppText>
+              <AppText className="text-surface-light/80 text-right">
+                براہِ کرم {phone} پر بھیجا گیا کوڈ درج کریں
+              </AppText>
+            </View>
+
+            {/* OTP Form card */}
+            <View className="rounded-3xl bg-surface px-5 py-6 shadow-lg shadow-black/30 border border-white/10 mb-5">
+              <View className="mb-5 items-end">
+                <AppText className="text-white mb-4 text-right">او ٹی پی</AppText>
+                <View
+                  style={{
+                    width: '100%',
+                    alignItems: 'flex-end',
+                  }}
+                >
+                  <OtpInput
+                    ref={otpInputRef}
+                    numberOfDigits={6}
+                    onTextChange={setOtp}
+                    onFilled={handleOtpFilled}
+                    type="numeric"
+                    autoFocus={true}
+                    focusColor="#8c43b4"
+                    blurOnFilled={false}
+                    hideStick={false}
+                    theme={{
+                      containerStyle: {
+                        width: 'auto',
+                        flexDirection: 'row',
+                        justifyContent: 'flex-end',
+                        gap: 8,
+                      },
+                      pinCodeContainerStyle: {
+                        flex: 1,
+                        maxWidth: 52,
+                        height: 52,
+                        backgroundColor: '#047857',
+                        borderRadius: 12,
+                        borderWidth: 0,
+                        minWidth: 45,
+                      },
+                      pinCodeTextStyle: {
+                        color: 'white',
+                        fontSize: 20,
+                        fontWeight: '700',
+                        textAlign: 'center',
+                      },
+                      focusStickStyle: {
+                        backgroundColor: '#8c43b4',
+                        width: 2,
+                      },
+                      focusedPinCodeContainerStyle: {
+                        backgroundColor: '#065f46',
+                        borderWidth: 2,
+                        borderColor: '#8c43b4',
+                        borderRadius: 12,
+                      },
+                      filledPinCodeContainerStyle: {
+                        backgroundColor: '#047857',
+                      },
+                    }}
+                  />
+                </View>
+              </View>
+            </View>
+
+            {/* Verify OTP Button */}
+            <Button
+              label="او ٹی پی تصدیق کریں"
+              onPress={handleVerifyOtp}
+              disabled={otp.length !== 6}
+              style={{
+                borderRadius: 16,
+                backgroundColor: otp.length === 6 ? '#8c43b4' : '#6b7280',
+                paddingVertical: 12,
+              }}
+              labelStyle={{
+                color: 'white',
+                fontSize: 16,
+              }}
+            />
+
+            {/* Back to form link at bottom */}
+            <TouchableOpacity
+              onPress={handleBackToForm}
+              activeOpacity={0.7}
+              style={{
+                marginTop: 20,
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: 6,
+              }}
+            >
+              <MaterialIcons name="edit" size={16} color="rgba(255, 255, 255, 0.8)" />
+              <AppText
+                className="text-white/80 text-center text-sm"
+                style={{
+                  textShadowColor: 'rgba(0, 0, 0, 0.75)',
+                  textShadowOffset: { width: 0, height: 1 },
+                  textShadowRadius: 3,
+                }}
+              >
+                فون نمبر تبدیل کریں
+              </AppText>
+            </TouchableOpacity>
+          </>
+        )}
+      </UIView>
     </BaseScreen>
   );
 }
