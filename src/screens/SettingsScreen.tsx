@@ -88,7 +88,7 @@ export function SettingsScreen() {
         >
           <View style={{ flex: 1, paddingTop: 60, paddingHorizontal: 24 }}>
             {/* Heading - Right Aligned */}
-            <View className="items-end mb-16">
+            <View className="items-end mb-5">
               <AppText className="text-3xl font-bold text-white text-right">
                 ترتیبات
               </AppText>
@@ -105,8 +105,8 @@ export function SettingsScreen() {
                     flexDirection: 'row',
                     alignItems: 'center',
                     justifyContent: 'flex-end',
-                    paddingVertical: 18,
-                    paddingHorizontal: 20,
+                    paddingVertical: 16,
+                    paddingHorizontal: 16,
                     borderRadius: 16,
                     backgroundColor: 'rgba(255, 255, 255, 0.08)',
                     borderWidth: 1,
@@ -127,8 +127,8 @@ export function SettingsScreen() {
                     flexDirection: 'row',
                     alignItems: 'center',
                     justifyContent: 'flex-end',
-                    paddingVertical: 18,
-                    paddingHorizontal: 20,
+                    paddingVertical: 16,
+                    paddingHorizontal: 16,
                     borderRadius: 16,
                     backgroundColor: 'rgba(255, 255, 255, 0.08)',
                     borderWidth: 1,

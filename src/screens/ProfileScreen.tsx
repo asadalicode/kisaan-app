@@ -75,7 +75,7 @@ export function ProfileScreen() {
           contentContainerStyle={{
             paddingHorizontal: 30,
             paddingTop: 10,
-            paddingBottom: 100, // Space for fixed button
+            paddingBottom: 80, // Bottom padding for safe area
           }}
         >
           {/* Form card - Matching Signup Screen Style */}
@@ -121,6 +121,8 @@ export function ProfileScreen() {
               }}
             />
           </View>
+
+   
 
           {/* Village */}
           <View className="mb-4 items-end">
@@ -207,7 +209,7 @@ export function ProfileScreen() {
           </View>
 
           {/* Area (Raqba) */}
-          <View className="items-end">
+          <View className="mb-5 items-end">
             <AppText className="text-white mb-2 text-right">رقبہ</AppText>
             <TextField
               value={userData.raqba}
@@ -227,35 +229,24 @@ export function ProfileScreen() {
             />
           </View>
           </View>
-        </ScrollView>
 
-        {/* Fixed Update Button at Bottom */}
-        <View
-          style={{
-            position: 'absolute',
-            bottom: 0,
-            left: 0,
-            right: 0,
-            paddingHorizontal: 30,
-            paddingBottom: 50,
-            paddingTop: 10,
-            backgroundColor: '#064e3b',
-          }}
-        >
-          <Button
-            label="اپ ڈیٹ کریں"
-            onPress={handleUpdate}
-            style={{
-              borderRadius: 16,
-              backgroundColor: '#8c43b4',
-              paddingVertical: 12,
-            }}
-            labelStyle={{
-              color: 'white',
-              fontSize: 16,
-            }}
-          />
-        </View>
+          {/* Update Button - Inside ScrollView */}
+          <View style={{ marginTop: 20 }}>
+            <Button
+              label="اپ ڈیٹ کریں"
+              onPress={handleUpdate}
+              style={{
+                borderRadius: 16,
+                backgroundColor: '#8c43b4',
+                paddingVertical: 12,
+              }}
+              labelStyle={{
+                color: 'white',
+                fontSize: 16,
+              }}
+            />
+          </View>
+        </ScrollView>
       </UIView>
     </BaseScreen>
   );
