@@ -3,6 +3,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { StatusBar } from 'expo-status-bar';
 import React from 'react';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { bottomTabScreenOptions, getTabIcon } from '@/components/navigation/BottomTabConfig';
 import { ViewName } from '@/constants/routes';
@@ -66,13 +67,25 @@ function AuthNavigator() {
 /**
  * Bottom Tab Navigator for main app screens
  * Shows 4 tabs: Home, Location, Payment, Settings
- * Uses reusable bottom tab configuration
+ * Uses reusable bottom tab configuration with safe area insets
  */
 function AppTabNavigator() {
+  const insets = useSafeAreaInsets();
+  const bottomPadding = Math.max(insets.bottom, 8);
+  
   return (
     <AppTab.Navigator
       initialRouteName={ViewName.Home}
-      screenOptions={bottomTabScreenOptions}
+      screenOptions={{
+        ...bottomTabScreenOptions,
+        tabBarStyle: {
+          backgroundColor: '#047857',
+          borderTopWidth: 0,
+          height: 60 + bottomPadding,
+          paddingBottom: bottomPadding,
+          paddingTop: 8,
+        },
+      }}
     >
       <AppTab.Screen
         name={ViewName.Home}

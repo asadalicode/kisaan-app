@@ -3,6 +3,7 @@ import './src/theme';
 import { useFonts } from 'expo-font';
 import * as SplashScreen from 'expo-splash-screen';
 import React, { useEffect } from 'react';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { DataProvider } from '@/providers/DataProvider';
 import { DialogsAndAlertsProvider } from '@/providers/DialogsAndAlertsProvider';
@@ -31,13 +32,15 @@ export default function App() {
   }
 
   return (
-    <ReduxProvider>
-      <DialogsAndAlertsProvider>
-        <DataProvider>
-          <RoutesProvider />
-        </DataProvider>
-      </DialogsAndAlertsProvider>
-    </ReduxProvider>
+    <SafeAreaProvider>
+      <ReduxProvider>
+        <DialogsAndAlertsProvider>
+          <DataProvider>
+            <RoutesProvider />
+          </DataProvider>
+        </DialogsAndAlertsProvider>
+      </ReduxProvider>
+    </SafeAreaProvider>
   );
 }
 
