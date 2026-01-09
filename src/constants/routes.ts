@@ -7,6 +7,8 @@ export enum ViewName {
   Home = 'Home',
   Explore = 'Explore',
   Modal = 'Modal',
+  Settings = 'Settings',
+  Profile = 'Profile',
 }
 
 

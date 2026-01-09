@@ -22,6 +22,7 @@ export function SignupScreen() {
   const dispatch = useAppDispatch();
   const [name, setName] = useState('');
   const [phone, setPhoneInput] = useState('');
+  const [phoneError, setPhoneError] = useState('');
   const [landArea, setLandArea] = useState('');
   const [crop, setCrop] = useState('گندم');
   const [showOtpView, setShowOtpView] = useState(false);
@@ -32,13 +33,30 @@ export function SignupScreen() {
   const handleSignup = () => {
     // Validate required fields
     if (!name || !phone || !landArea) {
-      // You can add validation alert here
       return;
     }
+
+    // Normalize and validate Pakistani phone number (11 digits, starts with 03)
+    let digits = phone.replace(/\D/g, '');
+    if (digits.startsWith('92')) {
+      digits = '0' + digits.slice(2);
+    }
+
+    const isValidPhone = /^03[0-9]{9}$/.test(digits);
+
+    if (!isValidPhone) {
+      setPhoneError('فون نمبر صحیح درج کریں');
+      return;
+    }
+
+    // Save normalized phone and clear error
+    setPhoneInput(digits);
+    setPhoneError('');
+
     // Show OTP view
     setShowOtpView(true);
     // In real app, this would call an API to send OTP
-    console.log('OTP sent to:', phone);
+    console.log('OTP sent to:', digits);
   };
 
   const handleOtpFilled = (text: string) => {
@@ -76,10 +94,10 @@ export function SignupScreen() {
           <>
             {/* Heading */}
             <View className="items-end gap-2 mb-10">
-              <AppText className="text-3xl font-bold text-surface-light">
+              <AppText className="text-3xl font-bold text-surface-light text-right">
                 کسان ایپ میں خوش آمدید
               </AppText>
-              <AppText className="text-surface-light/80 text-right">
+              <AppText className="text-surface-light text-right text-lg font-semibold leading-6">
                 براہِ کرم اپنی معلومات درج کریں
               </AppText>
             </View>
@@ -139,8 +157,20 @@ export function SignupScreen() {
               }}
               codeTextStyle={{ color: 'white', fontSize: 14 }}
               value={phone}
-              onChangeFormattedText={setPhoneInput}
+              onChangeFormattedText={value => {
+                setPhoneInput(value);
+                if (phoneError) {
+                  setPhoneError('');
+                }
+              }}
             />
+            {phoneError ? (
+              <View className="mt-2 items-end">
+                <AppText className="text-red-400 text-sm text-right">
+                  {phoneError}
+                </AppText>
+              </View>
+            ) : null}
             {/* {!phone && (
               <View className="mt-1 items-end">
                 <AppText className="text-xs text-emerald-100">
@@ -193,17 +223,15 @@ export function SignupScreen() {
           <View className="items-end mb-4">
             <AppText className="text-white mb-3 text-right">فصل کا نام</AppText>
             <View className="w-full rounded-xl bg-surface-light px-4 py-3">
-              <AppText className="text-emerald-50 text-right mb-3">
-                {crop}
-              </AppText>
-              <View className="flex-row justify-between">
+              <View className="flex-row flex-wrap justify-between" style={{ rowGap: 8 }}>
                 {['گندم', 'چاول', 'مکئی'].map(option => (
-                  <Chip
-                    key={option}
-                    label={option}
-                    selected={crop === option}
-                    onPress={() => setCrop(option)}
-                  />
+                  <View key={option} style={{ width: '30%' }}>
+                    <Chip
+                      label={option}
+                      selected={crop === option}
+                      onPress={() => setCrop(option)}
+                    />
+                  </View>
                 ))}
               </View>
             </View>
@@ -233,20 +261,20 @@ export function SignupScreen() {
               style={{ marginTop: 16 }}
             >
               <AppText
-                className="text-white text-center text-base"
+                className="text-white text-center text-lg font-semibold"
                 style={{
-                  textShadowColor: 'rgba(0, 0, 0, 0.75)',
+                  textShadowColor: 'rgba(0, 0, 0, 0.9)',
                   textShadowOffset: { width: 0, height: 1 },
-                  textShadowRadius: 3,
+                  textShadowRadius: 4,
                 }}
               >
                 پہلے سے اکاؤنٹ ہے؟{' '}
                 <AppText
                   className="text-white font-bold underline"
                   style={{
-                    textShadowColor: 'rgba(0, 0, 0, 0.75)',
+                    textShadowColor: 'rgba(0, 0, 0, 0.9)',
                     textShadowOffset: { width: 0, height: 1 },
-                    textShadowRadius: 3,
+                    textShadowRadius: 4,
                   }}
                 >
                   لاگ ان کریں
@@ -258,7 +286,7 @@ export function SignupScreen() {
           <>
             {/* OTP View */}
             {/* Back Button - Top Left */}
-            <TouchableOpacity
+            {/* <TouchableOpacity
               onPress={handleBackToForm}
               activeOpacity={0.7}
               style={{
@@ -277,7 +305,7 @@ export function SignupScreen() {
               <AppText className="text-white text-base font-semibold">
                 واپس
               </AppText>
-            </TouchableOpacity>
+            </TouchableOpacity> */}
 
             {/* Heading */}
             <View className="items-end gap-2 mb-10">
@@ -378,13 +406,13 @@ export function SignupScreen() {
                 gap: 6,
               }}
             >
-              <MaterialIcons name="edit" size={16} color="rgba(255, 255, 255, 0.8)" />
+              <MaterialIcons name="edit" size={20} color="white" />
               <AppText
-                className="text-white/80 text-center text-sm"
+                className="text-white text-center text-lg font-semibold"
                 style={{
-                  textShadowColor: 'rgba(0, 0, 0, 0.75)',
+                  textShadowColor: 'rgba(0, 0, 0, 0.9)',
                   textShadowOffset: { width: 0, height: 1 },
-                  textShadowRadius: 3,
+                  textShadowRadius: 4,
                 }}
               >
                 فون نمبر تبدیل کریں

@@ -9,6 +9,10 @@ type CustomAlertProps = {
   buttonText?: string;
   onPress?: () => void;
   onDismiss?: () => void;
+  // For confirmation dialogs with two buttons
+  showCancel?: boolean;
+  cancelText?: string;
+  onCancel?: () => void;
 };
 
 export function CustomAlert({
@@ -18,9 +22,17 @@ export function CustomAlert({
   buttonText = 'ٹھیک ہے',
   onPress,
   onDismiss,
+  showCancel = false,
+  cancelText = 'نہیں',
+  onCancel,
 }: CustomAlertProps) {
   const handlePress = () => {
     onPress?.();
+    onDismiss?.();
+  };
+
+  const handleCancel = () => {
+    onCancel?.();
     onDismiss?.();
   };
 
@@ -65,20 +77,60 @@ export function CustomAlert({
             </AppText>
           </View>
 
-          {/* Button */}
-          <TouchableOpacity
-            onPress={handlePress}
-            style={{
-              backgroundColor: '#8c43b4',
-              borderRadius: 12,
-              paddingVertical: 12,
-              alignItems: 'center',
-            }}
-          >
-            <AppText className="text-white font-semibold text-base">
-              {buttonText}
-            </AppText>
-          </TouchableOpacity>
+          {/* Buttons */}
+          {showCancel ? (
+            // Two buttons layout (Yes/No)
+            <View style={{ flexDirection: 'row', gap: 12 }}>
+              {/* Cancel Button (No) */}
+              <TouchableOpacity
+                onPress={handleCancel}
+                style={{
+                  flex: 1,
+                  backgroundColor: '#374151',
+                  borderRadius: 12,
+                  paddingVertical: 12,
+                  alignItems: 'center',
+                  borderWidth: 1,
+                  borderColor: '#4b5563',
+                }}
+              >
+                <AppText className="text-white font-semibold text-base">
+                  {cancelText}
+                </AppText>
+              </TouchableOpacity>
+
+              {/* Confirm Button (Yes) */}
+              <TouchableOpacity
+                onPress={handlePress}
+                style={{
+                  flex: 1,
+                  backgroundColor: '#8c43b4',
+                  borderRadius: 12,
+                  paddingVertical: 12,
+                  alignItems: 'center',
+                }}
+              >
+                <AppText className="text-white font-semibold text-base">
+                  {buttonText}
+                </AppText>
+              </TouchableOpacity>
+            </View>
+          ) : (
+            // Single button layout
+            <TouchableOpacity
+              onPress={handlePress}
+              style={{
+                backgroundColor: '#8c43b4',
+                borderRadius: 12,
+                paddingVertical: 12,
+                alignItems: 'center',
+              }}
+            >
+              <AppText className="text-white font-semibold text-base">
+                {buttonText}
+              </AppText>
+            </TouchableOpacity>
+          )}
         </View>
       </View>
     </Modal>

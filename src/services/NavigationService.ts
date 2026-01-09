@@ -11,6 +11,8 @@ export type RootStackParamList = {
   [ViewName.Home]: undefined;
   [ViewName.Explore]: undefined;
   [ViewName.Modal]: undefined;
+  [ViewName.Settings]: undefined;
+  [ViewName.Profile]: undefined;
 };
 
 export const navigationRef =

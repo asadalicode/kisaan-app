@@ -1,28 +1,20 @@
-import { useNavigation } from '@react-navigation/native';
-import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { ResizeMode, Video } from 'expo-av';
 import React, { useEffect, useRef, useState } from 'react';
 import { Modal, TouchableOpacity, View } from 'react-native';
 import { Button, Incubator, View as UIView } from 'react-native-ui-lib';
 
 import { BaseScreen } from '@/components/layout/BaseScreen';
-import { ThemedText } from '@/components/themed-text';
 import { AppText } from '@/components/ui/AppText';
 import { CustomAlert } from '@/components/ui/CustomAlert';
-import { ViewName } from '@/constants/routes';
-import { useAppDispatch } from '@/hooks/useAppDispatch';
-import type { AppStackParamList } from '@/providers/RoutesProvider';
-import { navigate } from '@/services/NavigationService';
-import { clearSession } from '@/slices/sessionSlice';
 
-type PaymentScreenNavigationProp = NativeStackNavigationProp<AppStackParamList>;
-
+/**
+ * Payment Screen - For making payments in main app
+ * Works in tab navigator context (no navigation to other screens)
+ */
 export function PaymentScreen() {
-  const navigation = useNavigation<PaymentScreenNavigationProp>();
   const { TextField } = Incubator;
   const [paymentAmount, setPaymentAmount] = useState('');
   const [showVideoModal, setShowVideoModal] = useState(false);
-  const dispatch = useAppDispatch();
   const [alert, setAlert] = useState<{
     visible: boolean;
     title: string;
@@ -69,8 +61,8 @@ export function PaymentScreen() {
       title: 'کامیابی',
       message: 'ادائیگی کامیابی سے ہو گئی',
       onPress: () => {
-        // Navigate back to video page
-        navigate(ViewName.VideoInfo);
+        setAlert({ ...alert, visible: false });
+        setPaymentAmount(''); // Clear amount after successful payment
       },
     });
   };
@@ -84,14 +76,6 @@ export function PaymentScreen() {
             ادائیگی
           </AppText>
         </View>
-
-        <ThemedText
-          type="defaultSemiBold"
-          onPress={() => dispatch(clearSession())}
-          style={{ marginLeft: 'auto', textDecorationLine: 'underline' }}
-        >
-          Logout (temporary button for testing)
-        </ThemedText>
 
         {/* Instructions */}
         <View className="mb-8 items-end">

@@ -1,5 +1,3 @@
-import { useNavigation } from '@react-navigation/native';
-import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { ResizeMode, Video } from 'expo-av';
 import * as Location from 'expo-location';
 import React, { useRef, useState } from 'react';
@@ -16,15 +14,12 @@ import { Button, View as UIView } from 'react-native-ui-lib';
 import { BaseScreen } from '@/components/layout/BaseScreen';
 import { AppText } from '@/components/ui/AppText';
 import { CustomAlert } from '@/components/ui/CustomAlert';
-import { ViewName } from '@/constants/routes';
-import { useAppDispatch } from '@/hooks/useAppDispatch';
-import type { AuthStackParamList } from '@/providers/RoutesProvider';
 
-type LocationScreenNavigationProp = NativeStackNavigationProp<AuthStackParamList>;
-
+/**
+ * Location Screen - For viewing and updating location in main app
+ * Works in tab navigator context (no navigation to other screens)
+ */
 export function LocationScreen() {
-  const navigation = useNavigation<LocationScreenNavigationProp>();
-  const dispatch = useAppDispatch();
   const [showVideoModal, setShowVideoModal] = useState(false);
   const [alert, setAlert] = useState<{
     visible: boolean;
@@ -93,14 +88,13 @@ export function LocationScreen() {
       // Get current location
       let location = await Location.getCurrentPositionAsync({});
       
-      // Show success alert with tick
+      // Show success alert with location details
       setAlert({
         visible: true,
         title: '✓',
-        message: 'مقام کی تصدیق ہو گئی',
+        message: `مقام کی تصدیق ہو گئی\n\nLatitude: ${location.coords.latitude.toFixed(6)}\nLongitude: ${location.coords.longitude.toFixed(6)}`,
         onPress: () => {
-          // Navigate to video info screen after location confirmation
-          navigation.navigate(ViewName.VideoInfo);
+          setAlert({ ...alert, visible: false });
         },
       });
     } catch (error) {
